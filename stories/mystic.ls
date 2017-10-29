@@ -1,60 +1,57 @@
 tavern-enter
-    if !player.visited_tavern "Welcome to the tavern"
-    or "The tavern door swings open"
-
-    if player.drunk "Back so soon? (bar tender)"
-
-    next:now tavern
-;
+ check player visited_tavern
+  if true
+   say Welcome to the tavern
+  else
+   say The tavern door swings open
+ check player isDrunk
+  if true
+   say Back so soon? (bar tender)
+  next tavern
 
 tavern
-    @player.visited_tavern true
-    next:select {"Have a drink" bar,
-                "Look around" tavern-look,
-                "Leave" tavern-exit}
-
-    next:restart
-;
+ set play visited_tavern true
+ select
+  bar Have a drink
+  tavern-look Look around
+  tavern-exit Leave
+ next restart
 
 tavern-look
-    emit "You see a bartender, taking her time to make drinks. She seems to have a sour face on."
-    if player.drunk ["You see a cloaked figure sitting in the corner."
-       "Talk to cloaked figure?" next:await tavern-cloaked-figure]
-
-    next:now tavern
-;
+ say You see a bartender, taking her time to make drinks. She seems to have a sour face on.
+ check player isDrunk
+  if true
+   say You see a cloaked figure sitting in the corner.
+   confirm Talk to cloaked figure?
+    if true
+     next tavern-cloaked-figure
+  next tavern
 
 tavern-cloaked-figure
-    emit "Keep it to yourself, fool!"
-    next:now tavern
-;
+ say Keep it to yourself, fool!
+ next tavern
 
 tavern-exit
-    emit "See ya, stranger (bar tender)"
-    next:now town
-;
+ say See ya, stranger (bar tender)
+ next town
 
 town
-    emit "You see a small tavern"
-    next:select {"Sleep?" sleep,
-                "Enter tavern?" tavern-enter}
-
-    next:restart
-;
+ say You see a small tavern
+ select
+  sleep Sleep?
+  tavern-enter Enter tavern?
+ next restart
 
 sleep
-    next:exit
-
-;
+ exit
 
 root
-    emit ["Welcome to the story about the Mystic"
-         "You see a tavern with lights on and decide to enter"]
-    next:now tavern-enter
-;
+ say Welcome to the story about the Mystic
+ say You see a tavern with lights on and decide to enter
+ now tavern-enter
 
 bar
-    emit "You take a gulp of a stiff drink" "You immediately feel the effects"
-    @player.drunk true
-    next:now tavern
-;
+ say You take a gulp of a stiff drink
+ say You immediately feel the effects
+ set player isDrunk true
+ next tavern
